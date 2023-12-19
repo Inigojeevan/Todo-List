@@ -90,7 +90,7 @@ form button:hover {
   pointer-events: none;
 }
 
-.complete {
+.completed {
   text-decoration: line-through;
   opacity: 0.5;
 }

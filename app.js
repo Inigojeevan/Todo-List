@@ -3,6 +3,7 @@ const todoButton = document.querySelector(".todo-button");
 const todoList = document.querySelector(".todo-list");
 const filterOption = document.querySelector(".filter-todo");
 
+document.addEventListener("DOMContentLoaded", getTodos);
 todoButton.addEventListener("click", addTodo);
 todoList.addEventListener("click", deleteCheck);
 filterOption.addEventListener("click", filterTodo);
@@ -18,6 +19,8 @@ function addTodo(event) {
   newTodo.innerText = todoInput.value;
   newTodo.classList.add("todo-item");
   todoDiv.appendChild(newTodo);
+  //ADD todo to local storage
+  saveLocalTodos(todoInput.value);
   //Completed-button
   const completedButton = document.createElement("button");
   completedButton.innerHTML = '<i class="fa fa-check"></i>';
@@ -46,12 +49,12 @@ function deleteCheck(event) {
 
   if (item.classList[0] === "complete-btn") {
     const todo = item.parentElement;
-    todo.classList.toggle("complete");
+    todo.classList.toggle("completed");
   }
 }
 
 function filterTodo(e) {
-  const todos = todoList.childNodes;
+  const todos = todoList.childNodes; //slideDown options
   todos.forEach(function (todo) {
     switch (e.target.value) {
       case "all":
@@ -63,6 +66,57 @@ function filterTodo(e) {
         } else {
           todo.style.display = "none";
         }
+        break;
+      case "uncompleted":
+        if (!todo.classList.contains("completed")) {
+          todo.style.display = "flex";
+        } else {
+          todo.style.display = "none";
+        }
+        break;
     }
+  });
+}
+
+function saveLocalTodos(todo) {
+  let todos;
+  if (localStorage.getItem("todos") === null) {
+    todos = [];
+  } else {
+    todos = JSON.parse(localStorage.getItem("todos"));
+  }
+  todos.push(todo);
+  localStorage.setItem("todos", JSON.stringify(todos)); //changes it to JSON
+}
+
+function getTodos() {
+  let todos;
+  if (localStorage.getItem("todos") === null) {
+    todos = [];
+  } else {
+    todos = JSON.parse(localStorage.getItem("todos"));
+  }
+
+  todos.forEach(function (todo) {
+    //TODO div
+    const todoDiv = document.createElement("div");
+    todoDiv.classList.add("todo");
+    //Create LI
+    const newTodo = document.createElement("li");
+    newTodo.innerText = todo;
+    newTodo.classList.add("todo-item");
+    todoDiv.appendChild(newTodo);
+    //Completed-button
+    const completedButton = document.createElement("button");
+    completedButton.innerHTML = '<i class="fa fa-check"></i>';
+    completedButton.classList.add("complete-btn");
+    todoDiv.append(completedButton);
+    //trash-button
+    const trashButton = document.createElement("button");
+    trashButton.innerHTML = '<i class="fa fa-trash"></i>';
+    trashButton.classList.add("trash-btn");
+    todoDiv.append(trashButton);
+    //append-to-list
+    todoList.appendChild(todoDiv);
   });
 }
